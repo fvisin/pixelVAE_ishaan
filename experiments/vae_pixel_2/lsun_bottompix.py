@@ -78,7 +78,7 @@ ALPHA_ITERS = 10000
 BETA_ITERS = 1000
 
 VANILLA = False
-LR = 1e-3
+LR = 1e-4
 
 LSUN_DOWNSAMPLE = True
 
@@ -100,7 +100,7 @@ def leakyrelu(x):
 
 def Enc1(inputs):
     output = inputs
-    
+
     output = ((T.cast(output, 'float32') / 128) - 1) * 5
 
     output = leakyrelu(lib.ops.conv2d.Conv2D('Enc1.1', input_dim=N_CHANNELS, output_dim=DIM_1, filter_size=3, inputs=output))
@@ -137,11 +137,11 @@ def Dec1(latents, images):
     images = ((T.cast(images, 'float32') / 128) - 1) * 5
 
     masked_images = leakyrelu(lib.ops.conv2d.Conv2D(
-        'Dec1.Pix1', 
+        'Dec1.Pix1',
         input_dim=N_CHANNELS,
         output_dim=DIM_1,
-        filter_size=5, 
-        inputs=images, 
+        filter_size=5,
+        inputs=images,
         mask_type=('a', N_CHANNELS)
     ))
 
@@ -194,7 +194,7 @@ def clamp_logsig(logsig):
     return result
 
 def clamp_logsig_posterior(logsig):
-     return T.maximum(-3, logsig)   
+     return T.maximum(-3, logsig)
 
 # Layer 1
 
@@ -331,7 +331,7 @@ def generate_and_save_samples(tag):
         latents1_copied[i::8] = latents1
 
     samples = np.zeros(
-        (64, N_CHANNELS, HEIGHT, WIDTH), 
+        (64, N_CHANNELS, HEIGHT, WIDTH),
         dtype='int32'
     )
 
@@ -364,8 +364,8 @@ lib.train_loop.train_loop(
     inject_total_iters=True,
     cost=cost,
     prints=[
-        ('alpha', alpha), 
-        ('reconst', reconst_cost), 
+        ('alpha', alpha),
+        ('reconst', reconst_cost),
         ('kl1', kl_cost_1),
         # ('reg', reg_cost),
         # ('mic_reg', mic_reg_cost)

@@ -62,8 +62,8 @@ def train_loop(
     if nan_guard:
         from theano.compile.nanguardmode import NanGuardMode
         mode = NanGuardMode(
-            nan_is_error=True, 
-            inf_is_error=True, 
+            nan_is_error=True,
+            inf_is_error=True,
             big_is_error=True
         )
     else:
@@ -149,7 +149,7 @@ def train_loop(
                         ]
                     else:
                         test_outputs = [
-                            eval_fn(*inputs) 
+                            eval_fn(*inputs)
                             for inputs in test_data()
                         ]
                     test_mean_outputs = np.array(test_outputs).mean(axis=0)

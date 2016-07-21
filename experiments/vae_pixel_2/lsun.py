@@ -121,7 +121,7 @@ theano_srng = RandomStreams(seed=234)
 
 def Enc1(inputs):
     output = inputs
-    
+
     output = ((T.cast(output, 'float32') / 128) - 1) * 5
 
     output = T.nnet.relu(lib.ops.conv2d.Conv2D('Enc1.1', input_dim=N_CHANNELS, output_dim=DIM_1, filter_size=3, inputs=output))
@@ -154,11 +154,11 @@ def Dec1(latents, images):
     images = ((T.cast(images, 'float32') / 128) - 1) * 5
 
     masked_images = T.nnet.relu(lib.ops.conv2d.Conv2D(
-        'Dec1.Pix1', 
+        'Dec1.Pix1',
         input_dim=N_CHANNELS,
         output_dim=DIM_1,
-        filter_size=7, 
-        inputs=images, 
+        filter_size=7,
+        inputs=images,
         mask_type=('a', N_CHANNELS)
     ))
 
@@ -179,7 +179,7 @@ def Enc2(latents):
     latents = T.clip(latents, lib.floatX(-50), lib.floatX(50))
 
     output = latents
-    
+
     output = T.nnet.relu(lib.ops.conv2d.Conv2D('Enc2.1', input_dim=LATENT_DIM_1, output_dim=DIM_3, filter_size=3, inputs=output))
     output = T.nnet.relu(lib.ops.conv2d.Conv2D('Enc2.2', input_dim=DIM_3,        output_dim=DIM_4, filter_size=3, inputs=output, stride=2))
 
@@ -212,11 +212,11 @@ def Dec2(latents, targets):
     output = T.nnet.relu(lib.ops.conv2d.Conv2D(    'Dec2.7', input_dim=DIM_3, output_dim=DIM_3, filter_size=3, inputs=output))
 
     masked_targets = T.nnet.relu(lib.ops.conv2d.Conv2D(
-        'Dec2.Pix1', 
+        'Dec2.Pix1',
         input_dim=LATENT_DIM_1,
         output_dim=DIM_3,
-        filter_size=5, 
-        inputs=targets, 
+        filter_size=5,
+        inputs=targets,
         mask_type=('a', 1)
     ))
 
@@ -295,7 +295,7 @@ mic_kl_1 = mic_kl_1.mean()
 kl_cost_1 = kl_cost_1.mean()
 
 reg_cost = lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-    mu2, 
+    mu2,
     logsig2
 ).mean(axis=0)
 mic_reg_cost = T.maximum(alpha3, reg_cost)
@@ -388,7 +388,7 @@ def generate_and_save_samples(tag):
 
 
     samples = np.zeros(
-        (64, N_CHANNELS, HEIGHT, WIDTH), 
+        (64, N_CHANNELS, HEIGHT, WIDTH),
         dtype='int32'
     )
 
@@ -421,8 +421,8 @@ lib.train_loop.train_loop(
     inject_total_iters=True,
     cost=cost,
     prints=[
-        ('alpha', alpha), 
-        ('reconst', reconst_cost), 
+        ('alpha', alpha),
+        ('reconst', reconst_cost),
         ('kl1', kl_cost_1),
         # ('mic_kl1', mic_kl_1),
         ('reg', reg_cost),
