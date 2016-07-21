@@ -42,6 +42,10 @@ import lasagne
 import time
 import functools
 
+save_params = True
+save_prefix = 'full_pixel_vae_'
+reload_params = False
+
 theano.config.dnn.conv.algo_fwd = 'time_on_shape_change'
 theano.config.dnn.conv.algo_bwd_filter = 'time_on_shape_change'
 theano.config.dnn.conv.algo_bwd_data = 'time_on_shape_change'
@@ -399,10 +403,11 @@ def generate_and_save_samples(tag):
 
     print "Saving samples"
     color_grid_vis(
-        samples, 
-        8, 
-        8, 
-        'samples_{}.png'.format(tag)
+        samples,
+        8,
+        8,
+        os.path.join(os.getcwd(), 'samples', save_prefix +
+                     'samples_{}.png'.format(tag))
     )
 
 def generate_and_save_samples_twice(tag):
@@ -426,6 +431,9 @@ lib.train_loop.train_loop(
     optimizer=functools.partial(lasagne.updates.adam, learning_rate=LR),
     train_data=train_data,
     # test_data=dev_data,
+    reload_params=reload_params,
+    save_params=save_params,
+    save_prefix=save_prefix,
     callback=generate_and_save_samples,
     times=TIMES
 )

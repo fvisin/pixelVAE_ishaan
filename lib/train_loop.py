@@ -1,6 +1,7 @@
 import lib
 
 import numpy as np
+import os
 import theano
 import theano.tensor as T
 import lasagne
@@ -19,7 +20,9 @@ def train_loop(
     test_data=None,
     callback=None,
     optimizer=lasagne.updates.adam,
+    reload_params=False,
     save_params=False,
+    save_prefix='',
     nan_guard=False
     ):
 
@@ -31,6 +34,24 @@ def train_loop(
     grads = [T.clip(g, lib.floatX(-1), lib.floatX(1)) for g in grads]
 
     updates = optimizer(grads, params)
+
+    if reload_params:
+        p = os.path.join(os.getcwd(), 'params')
+
+        # Find the latest checkpoint for this model
+        max_iters = 0
+        for root, dirs, ff in os.walk(p):
+            for f in ff:
+                if f.endswith(".pkl") and save_prefix in f:
+                    iters_num = int(f.split('_')[-2][5:])
+                    if iters_num > max_iters:
+                        reload_file = f
+                        max_iters = iters_num
+        if max_iters == 0:
+            raise RuntimeError('No param file found in {} for {}'.format(
+                p, save_prefix))
+        # Load the saved params
+        lib.load_params(os.path.join(os.getcwd(), 'params', reload_file))
 
     if prints is None:
         prints = [('cost', cost)]
@@ -167,7 +188,9 @@ def train_loop(
                 if callback is not None:
                     callback(tag)
                 if save_params:
-                    lib.save_params('params_{}.pkl'.format(tag))
+                    lib.save_params(os.path.join(os.getcwd(), 'params',
+                                                 save_prefix +
+                                                 'params_{}.pkl'.format(tag)))
 
                 last_gen += gen_every
 
