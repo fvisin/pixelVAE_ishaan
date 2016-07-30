@@ -276,8 +276,10 @@ with tf.Session() as session:
                     lib.ops.kl_gaussian_gaussian.kl_gaussian_gaussian(
                         mu1,
                         logsig1,
+                        tf.exp(logsig1),
                         mu1_prior,
-                        logsig1_prior
+                        logsig1_prior,
+                        tf.exp(logsig1_prior)
                     ),
                     reduction_indices=[0]
                 ),
@@ -289,8 +291,9 @@ with tf.Session() as session:
 
             kl_cost_2 = tf.reduce_mean(
                 lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-                    mu2, 
-                    logsig2
+                    mu2,
+                    logsig2,
+                    tf.exp(logsig2)
                 ),
                 reduction_indices=[0]
             )
