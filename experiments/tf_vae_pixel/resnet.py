@@ -38,6 +38,7 @@ import functools
 
 # mnist_256, lsun_downsampled
 DATASET = 'mnist_256'
+DEVICES = ['/gpu:1']
 
 if DATASET == 'mnist_256':
     # two_level uses Enc1/Dec1 for the bottom level, Enc2/Dec2 for the top level
@@ -445,7 +446,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_1 = tf.reduce_mean(
                     lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-                        mu1, 
+                        mu1,
                         logsig1,
                         sig1
                     )
@@ -506,7 +507,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_1 = tf.reduce_mean(
                     lib.ops.kl_gaussian_gaussian.kl_gaussian_gaussian(
-                        mu1, 
+                        mu1,
                         logsig1,
                         sig1,
                         mu1_prior,
@@ -517,7 +518,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_2 = tf.reduce_mean(
                     lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-                        mu2, 
+                        mu2,
                         logsig2,
                         sig2
                     )
@@ -573,7 +574,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
                 latents1_copied[i::8] = sample_fn_latents1
 
             samples = np.zeros(
-                (64, N_CHANNELS, HEIGHT, WIDTH), 
+                (64, N_CHANNELS, HEIGHT, WIDTH),
                 dtype='int32'
             )
 
@@ -586,9 +587,9 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
             print "Saving samples"
             color_grid_vis(
-                samples, 
-                8, 
-                8, 
+                samples,
+                8,
+                8,
                 'samples_{}.png'.format(tag)
             )
 
@@ -649,7 +650,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
             latents1_copied[1::2] = latents1
 
             samples = np.zeros(
-                (64, N_CHANNELS, HEIGHT, WIDTH), 
+                (64, N_CHANNELS, HEIGHT, WIDTH),
                 dtype='int32'
             )
 
@@ -672,15 +673,15 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
     if MODE == 'one_level':
         prints=[
-            ('alpha', alpha), 
-            ('reconst', reconst_cost), 
+            ('alpha', alpha),
+            ('reconst', reconst_cost),
             ('kl1', kl_cost_1)
         ]
     elif MODE == 'two_level':
         prints=[
             ('alpha1', alpha1),
             ('alpha2', alpha2),
-            ('reconst', reconst_cost), 
+            ('reconst', reconst_cost),
             ('kl1', kl_cost_1),
             ('kl2', kl_cost_2),
         ]

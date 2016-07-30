@@ -31,6 +31,10 @@ from scipy.misc import imsave
 import time
 import functools
 
+save_params = True
+save_prefix = 'full_pixel_vae_'
+reload_params = False
+
 DIM_1        = 64
 DIM_PIX_1    = 64
 DIM_2        = 128
@@ -55,7 +59,7 @@ HEIGHT = 32
 WIDTH = 32
 
 DEVICES = ['/gpu:0', '/gpu:1', '/gpu:2', '/gpu:3']
-# DEVICES = ['/gpu:0']
+DEVICES = ['/gpu:0']
 
 TIMES = {
     'mode': 'iters',
@@ -76,7 +80,7 @@ with tf.Session() as session:
 
     def Enc1(inputs):
         output = inputs
-        
+
         output = ((tf.cast(output, 'float32') / 128) - 1) * 5
 
         output = tf.nn.relu(lib.ops.conv2d.Conv2D('Enc1.1', input_dim=N_CHANNELS, output_dim=DIM_1, filter_size=3, inputs=output))
@@ -109,11 +113,11 @@ with tf.Session() as session:
         images = ((tf.cast(images, 'float32') / 128) - 1) * 5
 
         masked_images = tf.nn.relu(lib.ops.conv2d.Conv2D(
-            'Dec1.Pix1', 
+            'Dec1.Pix1',
             input_dim=N_CHANNELS,
             output_dim=DIM_1,
-            filter_size=5, 
-            inputs=images, 
+            filter_size=5,
+            inputs=images,
             mask_type=('a', N_CHANNELS)
         ))
 
@@ -137,7 +141,7 @@ with tf.Session() as session:
         latents = tf.clip_by_value(latents, -50., 50.)
 
         output = latents
-        
+
         output = tf.nn.relu(lib.ops.conv2d.Conv2D('Enc2.1', input_dim=LATENT_DIM_1, output_dim=DIM_3, filter_size=3, inputs=output))
         output = tf.nn.relu(lib.ops.conv2d.Conv2D('Enc2.2', input_dim=DIM_3,        output_dim=DIM_4, filter_size=3, inputs=output, stride=2))
 
@@ -170,11 +174,11 @@ with tf.Session() as session:
         output = tf.nn.relu(lib.ops.conv2d.Conv2D(    'Dec2.7', input_dim=DIM_3, output_dim=DIM_3, filter_size=3, inputs=output))
 
         masked_targets = tf.nn.relu(lib.ops.conv2d.Conv2D(
-            'Dec2.Pix1', 
+            'Dec2.Pix1',
             input_dim=LATENT_DIM_1,
             output_dim=DIM_3,
-            filter_size=5, 
-            inputs=targets, 
+            filter_size=5,
+            inputs=targets,
             mask_type=('a', 1)
         ))
 
@@ -263,7 +267,7 @@ with tf.Session() as session:
             kl2_clamp = 4 * (1 - (tf.cast(total_iters, 'float32') / KL2_CLAMP_ITERS))
 
             # kl2_clamp = tf.maximum(
-            #     0.125, 
+            #     0.125,
             #     4 * (1 - (tf.cast(total_iters, 'float32') / KL2_CLAMP_ITERS))
             # )
 
@@ -393,7 +397,7 @@ with tf.Session() as session:
 
 
     #     samples = np.zeros(
-    #         (64, N_CHANNELS, HEIGHT, WIDTH), 
+    #         (64, N_CHANNELS, HEIGHT, WIDTH),
     #         dtype='int32'
     #     )
 
@@ -408,9 +412,9 @@ with tf.Session() as session:
 
     #     print "Saving samples"
     #     color_grid_vis(
-    #         samples, 
-    #         8, 
-    #         8, 
+    #         samples,
+    #         8,
+    #         8,
     #         'samples_{}.png'.format(tag)
     #     )
 
@@ -426,8 +430,8 @@ with tf.Session() as session:
         inject_total_iters=True,
         cost=cost,
         prints=[
-            ('alpha', alpha), 
-            ('reconst', reconst_cost), 
+            ('alpha', alpha),
+            ('reconst', reconst_cost),
             ('kl1', kl_cost_1),
             ('clamped_kl1', clamped_kl_1),
             ('kl2', kl_cost_2),

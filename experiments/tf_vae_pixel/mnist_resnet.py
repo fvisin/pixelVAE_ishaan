@@ -32,9 +32,9 @@ import time
 import functools
 
 # Switch these lines to use 1 vs 4 GPUs
-# DEVICES = ['/gpu:0']
 DEVICES = ['gpu:5', '/gpu:6']
 # DEVICES = ['/gpu:4', '/gpu:5', '/gpu:6', '/gpu:7']
+DEVICES = ['/gpu:1']
 
 # two_level uses Enc1/Dec1 for the bottom level, Enc2/Dec2 for the top level
 # one_level uses EncFull/DecFull for the bottom (and only) level
@@ -279,7 +279,7 @@ def DecFull(latents, images):
 
         masked_images = lib.ops.conv2d.Conv2D('DecFull.Pix1', input_dim=N_CHANNELS, output_dim=DIM_1, filter_size=5, inputs=images, mask_type=('a', N_CHANNELS), he_init=False)
 
-        # Make the stdev of output and masked_images match   
+        # Make the stdev of output and masked_images match
         output /= np.sqrt(6)
 
         # Warning! Because of the masked convolutions it's very important that masked_images comes first in this concat
@@ -341,7 +341,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
                 reconst_cost = tf.reduce_mean(
                     tf.nn.sigmoid_cross_entropy_with_logits(outputs1, images)
                 )
-                
+
                 #logits = tf.reshape(outputs1, [-1, N_CHANNELS*HEIGHT*WIDTH])
                 #targets = tf.reshape(images, [-1, N_CHANNELS*HEIGHT*WIDTH])
 
@@ -362,7 +362,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_1 = tf.reduce_mean(
                     lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-                        mu1, 
+                        mu1,
                         logsig1,
                         sig1
                     )
@@ -419,7 +419,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_1 = tf.reduce_mean(
                     lib.ops.kl_gaussian_gaussian.kl_gaussian_gaussian(
-                        mu1, 
+                        mu1,
                         logsig1,
                         sig1,
                         mu1_prior,
@@ -430,7 +430,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
                 kl_cost_2 = tf.reduce_mean(
                     lib.ops.kl_unit_gaussian.kl_unit_gaussian(
-                        mu2, 
+                        mu2,
                         logsig2,
                         sig2
                     )
@@ -488,7 +488,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
     #             latents1_copied[i::4] = sample_fn_latents1
 
     #         samples = np.zeros(
-    #             (BATCH_SIZE, N_CHANNELS, HEIGHT, WIDTH), 
+    #             (BATCH_SIZE, N_CHANNELS, HEIGHT, WIDTH),
     #             dtype='int32'
     #         )
 
@@ -503,9 +503,9 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
     #         print "Saving samples"
     #         color_grid_vis(
-    #             samples, 
-    #             4, 
-    #             4, 
+    #             samples,
+    #             4,
+    #             4,
     #             '/data/lisatmp4/faruk/pixelvae/tmp/samples_{}.png'.format(tag)
     #         )
 
@@ -574,7 +574,7 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
 
     #         samples = np.zeros(
-    #             (BATCH_SIZE, N_CHANNELS, HEIGHT, WIDTH), 
+    #             (BATCH_SIZE, N_CHANNELS, HEIGHT, WIDTH),
     #             dtype='int32'
     #         )
 
@@ -589,9 +589,9 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
     #         print "Saving samples"
     #         color_grid_vis(
-    #             samples, 
-    #             4, 
-    #             4, 
+    #             samples,
+    #             4,
+    #             4,
     #             '/data/lisatmp4/faruk/pixelvae/tmp/samples_{}.png'.format(tag)
     #         )
 
@@ -599,14 +599,14 @@ with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as session:
 
     if MODE == 'one_level':
         prints=[
-            ('alpha', alpha), 
-            ('reconst', reconst_cost), 
+            ('alpha', alpha),
+            ('reconst', reconst_cost),
             ('kl1', kl_cost_1)
         ]
     elif MODE == 'two_level':
         prints=[
-            ('alpha', alpha), 
-            ('reconst', reconst_cost), 
+            ('alpha', alpha),
+            ('reconst', reconst_cost),
             ('kl1', kl_cost_1),
             ('kl2', kl_cost_2),
         ]

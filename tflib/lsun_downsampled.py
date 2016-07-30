@@ -40,12 +40,12 @@ def _make_stream(stream, bs, downsample):
                     result[i] += b
                     result[i] += c
                     result[i] += d
-                    result[i] /= 4                    
+                    result[i] /= 4
                     # print (a+b+c+d).dtype
                     # raise Exception()
                     # result[i] =  (a+b+c+d)/4
                 else:
-                    result[i] =  img[:64, :64, :]                
+                    result[i] =  img[:64, :64, :]
             # print "warning overfit mode"
             # color_grid_vis(result.transpose(0,3,1,2)[:,:3,:,:], 2, 2, 'reals.png')
             # while True:
